@@ -10,19 +10,16 @@
 var map = {
 	"../app/components/incidents/incidents.module": [
 		"./src/app/components/incidents/incidents.module.ts",
-		"default~app-components-incidents-incidents-module~app-components-process-process-module~app-componen~c190ce4d",
 		"default~app-components-incidents-incidents-module~app-components-process-process-module",
 		"app-components-incidents-incidents-module"
 	],
 	"../app/components/process/process.module": [
 		"./src/app/components/process/process.module.ts",
-		"default~app-components-incidents-incidents-module~app-components-process-process-module~app-componen~c190ce4d",
 		"default~app-components-incidents-incidents-module~app-components-process-process-module",
 		"app-components-process-process-module"
 	],
 	"../app/components/users/users.module": [
 		"./src/app/components/users/users.module.ts",
-		"default~app-components-incidents-incidents-module~app-components-process-process-module~app-componen~c190ce4d",
 		"app-components-users-users-module"
 	]
 };
@@ -407,6 +404,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _app_component__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./app.component */ "./src/app/app.component.ts");
 /* harmony import */ var _angular_forms__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! @angular/forms */ "./node_modules/@angular/forms/fesm2015/forms.js");
 /* harmony import */ var _components_register_page_register_page_component__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./components/register-page/register-page.component */ "./src/app/components/register-page/register-page.component.ts");
+/* harmony import */ var _store_effects_user_effects__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./store/effects/user.effects */ "./src/app/store/effects/user.effects.ts");
+/* harmony import */ var _store_reducers_user_reducer__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./store/reducers/user.reducer */ "./src/app/store/reducers/user.reducer.ts");
+
+
 
 
 
@@ -434,7 +435,9 @@ AppModule = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
             _ngrx_effects__WEBPACK_IMPORTED_MODULE_6__["EffectsModule"].forRoot([]),
             _ngrx_store_devtools__WEBPACK_IMPORTED_MODULE_4__["StoreDevtoolsModule"].instrument(),
             _angular_common_http__WEBPACK_IMPORTED_MODULE_5__["HttpClientModule"],
-            _angular_forms__WEBPACK_IMPORTED_MODULE_9__["ReactiveFormsModule"]
+            _angular_forms__WEBPACK_IMPORTED_MODULE_9__["ReactiveFormsModule"],
+            _ngrx_effects__WEBPACK_IMPORTED_MODULE_6__["EffectsModule"].forFeature([_store_effects_user_effects__WEBPACK_IMPORTED_MODULE_11__["UserEffects"]]),
+            _ngrx_store__WEBPACK_IMPORTED_MODULE_3__["StoreModule"].forFeature('users', _store_reducers_user_reducer__WEBPACK_IMPORTED_MODULE_12__["userReducer"]),
         ],
         providers: [],
         exports: [],
@@ -497,7 +500,7 @@ let RegisterPageComponent = class RegisterPageComponent {
             email: ['', [_angular_forms__WEBPACK_IMPORTED_MODULE_3__["Validators"].required, _angular_forms__WEBPACK_IMPORTED_MODULE_3__["Validators"].email]],
             password: ['', [_angular_forms__WEBPACK_IMPORTED_MODULE_3__["Validators"].required, _angular_forms__WEBPACK_IMPORTED_MODULE_3__["Validators"].minLength(6)]],
             name: ['', [_angular_forms__WEBPACK_IMPORTED_MODULE_3__["Validators"].required, _customValidators__WEBPACK_IMPORTED_MODULE_7__["CustomValidators"].checkNumberInName]],
-            DOB: ['', _angular_forms__WEBPACK_IMPORTED_MODULE_3__["Validators"].required, _customValidators__WEBPACK_IMPORTED_MODULE_7__["CustomValidators"].dueDateValidator],
+            DOB: ['', _angular_forms__WEBPACK_IMPORTED_MODULE_3__["Validators"].required],
             position: ['', _angular_forms__WEBPACK_IMPORTED_MODULE_3__["Validators"].required],
         });
     }
@@ -506,17 +509,16 @@ let RegisterPageComponent = class RegisterPageComponent {
             email: this.userRegForm.get('email').value,
             password: this.userRegForm.get('password').value
         };
-        const regUSR = {
+        const newUser = {
+            id: this.userRegForm.get('name').value,
             name: this.userRegForm.get('name').value,
             DOB: this.userRegForm.get('DOB').value,
             position: this.userRegForm.get('position').value,
         };
-        this.auth.regUser(regUser).subscribe(response => {
-            console.log('Reg USR');
-            regUSR.id = response.localId;
-            this.store.dispatch(new _store_actions_user_action__WEBPACK_IMPORTED_MODULE_5__["CreateUser"](regUSR));
+        this.auth.registerUser(regUser).subscribe(response => {
+            newUser.id = response.localId;
+            this.store.dispatch(new _store_actions_user_action__WEBPACK_IMPORTED_MODULE_5__["CreateUser"](newUser));
         });
-        this.userRegForm.reset();
     }
 };
 RegisterPageComponent.ctorParameters = () => [
@@ -597,7 +599,7 @@ let AuthService = class AuthService {
     constructor(http) {
         this.http = http;
     }
-    regUser(regUser) {
+    registerUser(regUser) {
         regUser.returnSecureToken = true;
         return this.http.post(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${_environments_environment__WEBPACK_IMPORTED_MODULE_3__["environment"].apiKey}`, regUser);
     }
@@ -610,6 +612,62 @@ AuthService = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
         providedIn: 'root'
     })
 ], AuthService);
+
+
+
+/***/ }),
+
+/***/ "./src/app/services/user.service.ts":
+/*!******************************************!*\
+  !*** ./src/app/services/user.service.ts ***!
+  \******************************************/
+/*! exports provided: UserService */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "UserService", function() { return UserService; });
+/* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm2015/core.js");
+/* harmony import */ var _angular_common_http__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/common/http */ "./node_modules/@angular/common/fesm2015/http.js");
+/* harmony import */ var _environments_environment__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../environments/environment */ "./src/environments/environment.ts");
+/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! rxjs/operators */ "./node_modules/rxjs/_esm2015/operators/index.js");
+
+
+
+
+
+let UserService = class UserService {
+    constructor(http) {
+        this.http = http;
+    }
+    getUsers() {
+        return this.http.get(`${_environments_environment__WEBPACK_IMPORTED_MODULE_3__["environment"].fbDbUrl}/users.json`).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_4__["map"])((response) => {
+            return Object
+                .keys(response)
+                .map(key => (Object.assign({}, response[key], { DOB: new Date(response[key].DOB) })));
+        }));
+    }
+    getUserById(payload) {
+        return this.http.get(`${_environments_environment__WEBPACK_IMPORTED_MODULE_3__["environment"].fbDbUrl}/users/${payload}.json`);
+    }
+    createUser(payload) {
+        return this.http.patch(`${_environments_environment__WEBPACK_IMPORTED_MODULE_3__["environment"].fbDbUrl}/users/${payload.id}.json`, payload).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_4__["map"])((response) => {
+            return Object.assign({}, payload, { id: response.name, DOB: new Date(payload.DOB) });
+        }));
+    }
+    updateUser(user) {
+        return this.http.patch(`${_environments_environment__WEBPACK_IMPORTED_MODULE_3__["environment"].fbDbUrl}/users/${user.id}.json`, user);
+    }
+};
+UserService.ctorParameters = () => [
+    { type: _angular_common_http__WEBPACK_IMPORTED_MODULE_2__["HttpClient"] }
+];
+UserService = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
+    Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Injectable"])({
+        providedIn: 'root'
+    })
+], UserService);
 
 
 
@@ -725,6 +783,146 @@ class UpdateUserFail {
         this.type = UserActionType.UPDATE_USER_FAIL;
     }
 }
+
+
+/***/ }),
+
+/***/ "./src/app/store/effects/user.effects.ts":
+/*!***********************************************!*\
+  !*** ./src/app/store/effects/user.effects.ts ***!
+  \***********************************************/
+/*! exports provided: UserEffects */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "UserEffects", function() { return UserEffects; });
+/* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm2015/core.js");
+/* harmony import */ var _services_user_service__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../services/user.service */ "./src/app/services/user.service.ts");
+/* harmony import */ var _ngrx_effects__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @ngrx/effects */ "./node_modules/@ngrx/effects/fesm2015/effects.js");
+/* harmony import */ var _actions_user_action__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../actions/user.action */ "./src/app/store/actions/user.action.ts");
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! rxjs */ "./node_modules/rxjs/_esm2015/index.js");
+/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! rxjs/operators */ "./node_modules/rxjs/_esm2015/operators/index.js");
+
+
+
+
+
+
+
+let UserEffects = class UserEffects {
+    constructor(actions$, userService) {
+        this.actions$ = actions$;
+        this.userService = userService;
+        this.loadUsers$ = this.actions$.pipe(Object(_ngrx_effects__WEBPACK_IMPORTED_MODULE_3__["ofType"])(_actions_user_action__WEBPACK_IMPORTED_MODULE_4__["UserActionType"].LOAD_USERS), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_6__["mergeMap"])((action) => this.userService.getUsers().pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_6__["map"])((users) => new _actions_user_action__WEBPACK_IMPORTED_MODULE_4__["LoadUsersSuccess"](users)), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_6__["catchError"])(err => Object(rxjs__WEBPACK_IMPORTED_MODULE_5__["of"])(new _actions_user_action__WEBPACK_IMPORTED_MODULE_4__["LoadUsersFail"](err))))));
+        this.loadUser$ = this.actions$.pipe(Object(_ngrx_effects__WEBPACK_IMPORTED_MODULE_3__["ofType"])(_actions_user_action__WEBPACK_IMPORTED_MODULE_4__["UserActionType"].LOAD_USER), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_6__["mergeMap"])((action) => this.userService.getUserById(action.payload).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_6__["map"])((user) => new _actions_user_action__WEBPACK_IMPORTED_MODULE_4__["LoadUserSuccess"](user)), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_6__["catchError"])(err => Object(rxjs__WEBPACK_IMPORTED_MODULE_5__["of"])(new _actions_user_action__WEBPACK_IMPORTED_MODULE_4__["LoadUserFail"](err))))));
+        this.createUser$ = this.actions$.pipe(Object(_ngrx_effects__WEBPACK_IMPORTED_MODULE_3__["ofType"])(_actions_user_action__WEBPACK_IMPORTED_MODULE_4__["UserActionType"].CREATE_USER), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_6__["map"])((action) => action.payload), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_6__["mergeMap"])((user) => this.userService.createUser(user).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_6__["map"])((newUser) => new _actions_user_action__WEBPACK_IMPORTED_MODULE_4__["CreateUserSuccess"](newUser)), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_6__["catchError"])(err => Object(rxjs__WEBPACK_IMPORTED_MODULE_5__["of"])(new _actions_user_action__WEBPACK_IMPORTED_MODULE_4__["CreateUserFail"](err))))));
+        this.updateUser$ = this.actions$.pipe(Object(_ngrx_effects__WEBPACK_IMPORTED_MODULE_3__["ofType"])(_actions_user_action__WEBPACK_IMPORTED_MODULE_4__["UserActionType"].UPDATE_USER), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_6__["map"])((action) => action.payload), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_6__["mergeMap"])((user) => this.userService.updateUser(user).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_6__["map"])((updateUser) => new _actions_user_action__WEBPACK_IMPORTED_MODULE_4__["UpdateUserSuccess"]({
+            id: updateUser.id,
+            changes: updateUser
+        })), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_6__["catchError"])(err => Object(rxjs__WEBPACK_IMPORTED_MODULE_5__["of"])(new _actions_user_action__WEBPACK_IMPORTED_MODULE_4__["UpdateUserFail"](err))))));
+    }
+};
+UserEffects.ctorParameters = () => [
+    { type: _ngrx_effects__WEBPACK_IMPORTED_MODULE_3__["Actions"] },
+    { type: _services_user_service__WEBPACK_IMPORTED_MODULE_2__["UserService"] }
+];
+tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
+    Object(_ngrx_effects__WEBPACK_IMPORTED_MODULE_3__["Effect"])()
+], UserEffects.prototype, "loadUsers$", void 0);
+tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
+    Object(_ngrx_effects__WEBPACK_IMPORTED_MODULE_3__["Effect"])()
+], UserEffects.prototype, "loadUser$", void 0);
+tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
+    Object(_ngrx_effects__WEBPACK_IMPORTED_MODULE_3__["Effect"])()
+], UserEffects.prototype, "createUser$", void 0);
+tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
+    Object(_ngrx_effects__WEBPACK_IMPORTED_MODULE_3__["Effect"])()
+], UserEffects.prototype, "updateUser$", void 0);
+UserEffects = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
+    Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Injectable"])()
+], UserEffects);
+
+
+
+/***/ }),
+
+/***/ "./src/app/store/reducers/user.reducer.ts":
+/*!************************************************!*\
+  !*** ./src/app/store/reducers/user.reducer.ts ***!
+  \************************************************/
+/*! exports provided: userAdapter, defaultUser, initialState, userReducer, getUsers, getUsersLoading, getUsersLoaded, getUsersError, getCurrentUserId, getCurrentUser */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "userAdapter", function() { return userAdapter; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "defaultUser", function() { return defaultUser; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "initialState", function() { return initialState; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "userReducer", function() { return userReducer; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getUsers", function() { return getUsers; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getUsersLoading", function() { return getUsersLoading; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getUsersLoaded", function() { return getUsersLoaded; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getUsersError", function() { return getUsersError; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getCurrentUserId", function() { return getCurrentUserId; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getCurrentUser", function() { return getCurrentUser; });
+/* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
+/* harmony import */ var _actions_user_action__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../actions/user.action */ "./src/app/store/actions/user.action.ts");
+/* harmony import */ var _ngrx_store__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @ngrx/store */ "./node_modules/@ngrx/store/fesm2015/store.js");
+/* harmony import */ var _ngrx_entity__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @ngrx/entity */ "./node_modules/@ngrx/entity/fesm2015/entity.js");
+
+
+
+
+const userAdapter = Object(_ngrx_entity__WEBPACK_IMPORTED_MODULE_3__["createEntityAdapter"])();
+const defaultUser = {
+    ids: [],
+    entities: {},
+    selectedUserId: null,
+    loading: false,
+    loaded: false,
+    error: ''
+};
+const initialState = userAdapter.getInitialState(defaultUser);
+function userReducer(state = initialState, action) {
+    switch (action.type) {
+        case _actions_user_action__WEBPACK_IMPORTED_MODULE_1__["UserActionType"].LOAD_USERS_SUCCESS: {
+            return userAdapter.addAll(action.payload, Object.assign({}, state, { loading: false, loaded: true }));
+        }
+        case _actions_user_action__WEBPACK_IMPORTED_MODULE_1__["UserActionType"].LOAD_USERS_FAIL: {
+            return Object.assign({}, state, { entities: {}, loading: false, loaded: false, error: action.payload });
+        }
+        case _actions_user_action__WEBPACK_IMPORTED_MODULE_1__["UserActionType"].LOAD_USER_SUCCESS: {
+            return userAdapter.addOne(action.payload, Object.assign({}, state, { selectedUserId: action.payload.id }));
+        }
+        case _actions_user_action__WEBPACK_IMPORTED_MODULE_1__["UserActionType"].LOAD_USER_FAIL: {
+            return Object.assign({}, state, { error: action.payload });
+        }
+        case _actions_user_action__WEBPACK_IMPORTED_MODULE_1__["UserActionType"].CREATE_USER_SUCCESS: {
+            return userAdapter.addOne(action.payload, state);
+        }
+        case _actions_user_action__WEBPACK_IMPORTED_MODULE_1__["UserActionType"].CREATE_USER_FAIL: {
+            return Object.assign({}, state, { error: action.payload });
+        }
+        case _actions_user_action__WEBPACK_IMPORTED_MODULE_1__["UserActionType"].UPDATE_USER_SUCCESS: {
+            return userAdapter.updateOne(action.payload, state);
+        }
+        case _actions_user_action__WEBPACK_IMPORTED_MODULE_1__["UserActionType"].UPDATE_USER_FAIL: {
+            return Object.assign({}, state, { error: action.payload });
+        }
+        default: {
+            return state;
+        }
+    }
+}
+const getUserFeatureState = Object(_ngrx_store__WEBPACK_IMPORTED_MODULE_2__["createFeatureSelector"])('users');
+const getUsers = Object(_ngrx_store__WEBPACK_IMPORTED_MODULE_2__["createSelector"])(getUserFeatureState, userAdapter.getSelectors().selectAll);
+const getUsersLoading = Object(_ngrx_store__WEBPACK_IMPORTED_MODULE_2__["createSelector"])(getUserFeatureState, (state) => state.loading);
+const getUsersLoaded = Object(_ngrx_store__WEBPACK_IMPORTED_MODULE_2__["createSelector"])(getUserFeatureState, (state) => state.loaded);
+const getUsersError = Object(_ngrx_store__WEBPACK_IMPORTED_MODULE_2__["createSelector"])(getUserFeatureState, (state) => state.error);
+const getCurrentUserId = Object(_ngrx_store__WEBPACK_IMPORTED_MODULE_2__["createSelector"])(getUserFeatureState, (state) => state.selectedUserId);
+const getCurrentUser = Object(_ngrx_store__WEBPACK_IMPORTED_MODULE_2__["createSelector"])(getUserFeatureState, getCurrentUserId, state => state.entities[state.selectedUserId]);
 
 
 /***/ }),
