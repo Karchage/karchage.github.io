@@ -557,7 +557,7 @@ __webpack_require__.r(__webpack_exports__);
 
 class CustomValidators {
     static dueDateValidator(control) {
-        if (new Date().toLocaleDateString() > new Date(control.value).toLocaleDateString()) {
+        if (new Date() > new Date(control.value)) {
             return {
                 dueDateValid: true
             };

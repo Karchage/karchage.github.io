@@ -581,7 +581,7 @@
                 function CustomValidators() {
                 }
                 CustomValidators.dueDateValidator = function (control) {
-                    if (new Date().toLocaleDateString() > new Date(control.value).toLocaleDateString()) {
+                    if (new Date() > new Date(control.value)) {
                         return {
                             dueDateValid: true
                         };
