@@ -9,7 +9,7 @@
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony default export */ __webpack_exports__["default"] = ("<div class=\"editUser\">\n  <form [formGroup]=\"edit\" (submit)=\"updateUser()\">\n    <div class=\"inputs\">\n      <input type=\"text\" placeholder=\"name\" formControlName=\"name\">\n      <input type=\"text\" placeholder=\"position\" formControlName=\"position\">\n    </div>\n    <button class=\"btn\" type = \"submit\" [disabled]=\"edit.invalid\"><img src=\"../assets/images/icon.png\" alt=\"\" style=\"width: 1rem; height: 1rem\"></button>\n  </form>\n</div>\n\n");
+/* harmony default export */ __webpack_exports__["default"] = ("<div class=\"editUser\">\r\n  <form [formGroup]=\"edit\" (submit)=\"updateUser()\">\r\n    <div class=\"inputs\">\r\n      <input type=\"text\" placeholder=\"name\" formControlName=\"name\" [ngClass]=\"{invalid: edit.get('name').touched && edit.get('name').invalid}\">\r\n      <input type=\"text\" placeholder=\"position\" formControlName=\"position\" [ngClass]=\"{invalid: edit.get('position').touched && edit.get('position').invalid}\">\r\n    </div>\r\n    <button class=\"btn\" type = \"submit\" [disabled]=\"edit.invalid\"><img src=\"../assets/images/icon.png\" alt=\"\" style=\"width: 1rem; height: 1rem\"></button>\r\n  </form>\r\n</div>\r\n\r\n");
 
 /***/ }),
 
@@ -68,6 +68,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _store_actions_user_action__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../store/actions/user.action */ "./src/app/store/actions/user.action.ts");
 /* harmony import */ var _store_reducers_user_reducer__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../../store/reducers/user.reducer */ "./src/app/store/reducers/user.reducer.ts");
 /* harmony import */ var _ngrx_store__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @ngrx/store */ "./node_modules/@ngrx/store/fesm2015/store.js");
+/* harmony import */ var _customValidators__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../../customValidators */ "./src/app/customValidators.ts");
+
 
 
 
@@ -81,10 +83,10 @@ let UserEditComponent = class UserEditComponent {
     }
     ngOnInit() {
         this.edit = this.fb.group({
-            name: ['', _angular_forms__WEBPACK_IMPORTED_MODULE_2__["Validators"].required],
             DOB: ['', _angular_forms__WEBPACK_IMPORTED_MODULE_2__["Validators"].required],
             id: ['', _angular_forms__WEBPACK_IMPORTED_MODULE_2__["Validators"].required],
-            position: ['', _angular_forms__WEBPACK_IMPORTED_MODULE_2__["Validators"].required]
+            position: ['', _angular_forms__WEBPACK_IMPORTED_MODULE_2__["Validators"].required],
+            name: ['', _angular_forms__WEBPACK_IMPORTED_MODULE_2__["Validators"].compose([_angular_forms__WEBPACK_IMPORTED_MODULE_2__["Validators"].required, _customValidators__WEBPACK_IMPORTED_MODULE_6__["CustomValidators"].checkNumberInName])]
         });
         const users$ = this.store.select(_store_reducers_user_reducer__WEBPACK_IMPORTED_MODULE_4__["getCurrentUser"]);
         users$.subscribe(currentUser => {
